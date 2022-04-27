@@ -1,6 +1,7 @@
 #ifndef VECTOR3D_H_
 #define VECTOR3D_H_
 #include <cmath>
+#include <iostream>
 
 class vector3d {
 public:
@@ -17,7 +18,7 @@ public:
   double operator[](int i) const { return e[i]; }
   double &operator[](int i) { return e[i]; }
 
-  vector3d operator-() { return vector3d(-e[0], -e[1], -e[2]); }
+  vector3d operator-() const { return vector3d(-e[0], -e[1], -e[2]); }
 
   vector3d &operator+=(vector3d &other) {
     this->e[0] += other.e[0];
@@ -46,5 +47,38 @@ private:
 
 using point3d = vector3d;
 using color = vector3d;
+
+inline vector3d operator+(const vector3d &u, const vector3d &v) {
+  return vector3d(u.x() + v.x(), u.y() + v.y(), u.z() + v.z());
+}
+
+inline vector3d operator-(const vector3d &u, const vector3d &v) {
+  return vector3d(u.x() - v.x(), u.y() - v.y(), u.z() - v.z());
+}
+
+inline vector3d operator*(const vector3d &u, const vector3d &v) {
+  return vector3d(u.x() * v.x(), u.y() * v.y(), u.z() * v.z());
+}
+
+inline vector3d operator*(double t, const vector3d &v) {
+  return vector3d(t * v.x(), t * v.y(), t * v.z());
+}
+
+inline vector3d operator/(vector3d v, double t) { return (1 / t) * v; }
+
+inline double dot(const vector3d &u, const vector3d &v) {
+  return u.x() * v.x() + u.y() * v.y() + u.z() * v.z();
+}
+
+inline vector3d cross(const vector3d &u, const vector3d &v) {
+  return vector3d(u.y() * v.z() - u.z() * v.y(), u.z() * v.x() - u.x() * v.z(),
+                  u.x() * v.y() - u.y() * v.x());
+}
+
+inline vector3d unit_vector(vector3d v) { return v / v.length(); }
+
+inline std::ostream &operator<<(std::ostream &outstream, const vector3d &v) {
+  return outstream << v.x() << ' ' << v.y() << ' ' << v.z() << '\n';
+}
 
 #endif // VECTOR3D_H_
