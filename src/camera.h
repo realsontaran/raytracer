@@ -15,21 +15,21 @@ struct image_plane {
 
 class Camera {
 public:
-  Camera(point3d e, vector3d gaze, vector3d up, image_plane nearplane)
-      : e(e), w(gaze), v(up), nearplane(nearplane) {
-    u = cross(w, v);
+  Camera(point3d e, vector3d gaze, vector3d up, image_plane plane)
+      : e(e), w(-gaze), v(-up), plane(plane) {
+    u = cross(v, w);
   };
 
-  Ray getRay(double u, double v) const {
-    point3d m = nearplane.dist * w + e;
-    point3d q =
-        ((double)nearplane.l * this->u) + ((double)nearplane.t * this->v) + m;
-    double su = (u + 0.5) * (nearplane.r - nearplane.l) / nearplane.nx;
-    double sv = (v + 0.5) * (nearplane.t - nearplane.b) / nearplane.ny;
+  Ray getRay(double i, double j) const {
+    point3d m = e + (plane.dist * w);
+    point3d q = ((double)plane.l * u) + ((double)plane.t * v) + m;
 
-    vector3d s = q + su * this->u - sv * this->v;
+    double su = (i + 0.5) * (plane.r - plane.l) / (plane.nx - 1);
+    double sv = (j + 0.5) * (plane.t - plane.b) / (plane.ny - 1);
 
-    return Ray(e, s);
+    vector3d s = q + (su * u) - (sv * v);
+
+    return Ray(e, s - e);
   }
 
 private:
@@ -37,7 +37,7 @@ private:
   vector3d w;
   vector3d u;
   vector3d v;
-  image_plane nearplane;
+  image_plane plane;
 };
 
 #endif // CAMERA_H_
