@@ -17,8 +17,5 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 $(TARGET): $(OBJ)
 	$(CC) $(OBJ) -o $(TARGET)
 
-run : $(TARGET)
-	./$(TARGET) > $(OUT_IMG)
-
 clean:
 	$(RM) $(OBJ) $(TARGET) $(OUT_IMG)

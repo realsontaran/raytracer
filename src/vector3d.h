@@ -1,5 +1,6 @@
 #ifndef VECTOR3D_H_
 #define VECTOR3D_H_
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 
@@ -13,6 +14,9 @@ public:
   double z() const { return e[2]; }
   double length() const {
     return sqrt(e[0] * e[0] + e[1] * e[1] + e[2] * e[2]);
+  }
+  double length_square() const {
+    return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
   }
 
   double operator[](int i) const { return e[i]; }
@@ -38,6 +42,12 @@ public:
     this->e[0] /= t;
     this->e[1] /= t;
     this->e[2] /= t;
+    return *this;
+  }
+  vector3d &operator/=(const vector3d &other) {
+    this->e[0] /= other.x();
+    this->e[1] /= other.y();
+    this->e[2] /= other.z();
     return *this;
   }
 
@@ -77,6 +87,13 @@ inline vector3d cross(const vector3d &u, const vector3d &v) {
 
 inline vector3d unit_vector(vector3d v) { return v / v.length(); }
 
+inline vector3d clamp(vector3d v, double lo, double hi) {
+  double x, y, z;
+  x = v.x() < lo ? lo : v.x() > hi ? hi : v.x();
+  y = v.y() < lo ? lo : v.y() > hi ? hi : v.y();
+  z = v.z() < lo ? lo : v.z() > hi ? hi : v.z();
+  return vector3d(x, y, z);
+}
 inline std::ostream &operator<<(std::ostream &outstream, const vector3d &v) {
   return outstream << v.x() << ' ' << v.y() << ' ' << v.z() << '\n';
 }
