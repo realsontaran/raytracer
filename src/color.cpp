@@ -1,8 +1,8 @@
 #include "color.h"
 #include "vector3d.h"
 void color_ouput(std::ostream &out, color pixel_color) {
-  out << pixel_color.x() << ' ' << pixel_color.y() << ' ' << pixel_color.z()
-      << '\n';
+  out << (int)pixel_color.x() << ' ' << (int)pixel_color.y() << ' '
+      << (int)pixel_color.z() << '\n';
 }
 
 color cast0_255(color pixel_color) {
