@@ -10,7 +10,13 @@ struct hit_data {
   point3d p;
   vector3d n;
   double t;
+  bool front_face;
   std::shared_ptr<Material> material;
+
+  inline void set_face_normal(const Ray &r, const vector3d &outward_normal) {
+    front_face = dot(r.direction(), outward_normal) < 0;
+    n = front_face ? outward_normal : -outward_normal;
+  }
 };
 
 class Hittable {
