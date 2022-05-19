@@ -1,0 +1,26 @@
+#+TITLE: README
+#+OPTIONS: toc:nil date:nil author:nil title:nil
+
+* Raytracer
+Recursive raytracer written in C++ with shading support.
+
+* How to run
+This program takes custom xml file that you can see examples in [[file:scenes/][scenes folder]].
+
+#+begin_src shell
+make
+./raytracer xmlFilePath
+#+end_src
+
+* Scene results
+** Normal Render
+[[./resources/2022_05_05_235140.png]]
+| Vertex Count     | 45        |
+| XML Parsing Time | 225ms     |
+| Rendering Time   | 2195955ms |
+** Complex Render
+[[./resources/2022_05_05_235005.png]]
+| Vertex Count     | 633        |
+| XML Parsing Time | 1125ms     |
+| Rendering Time   | 63035625ms |
+
