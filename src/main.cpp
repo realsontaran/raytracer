@@ -5,6 +5,7 @@
 #include "ray.h"
 #include "triangle.h"
 #include "vector3d.h"
+#include <chrono>
 #include <cmath>
 #include <condition_variable>
 #include <fstream>
@@ -79,9 +80,26 @@ std::vector<color> threadColor(int start, int end, Scene scene, int depth) {
   return result;
 }
 
-int main() {
-  Parser *parser = new Parser(std::string("scene.xml"));
+int main(int argc, char *argv[]) {
+
+  if (argc != 2) {
+    std::cerr << "XML path is not given\n";
+    return -1;
+  }
+
+  std::chrono::steady_clock::time_point begin =
+      std::chrono::steady_clock::now();
+
+  Parser *parser = new Parser(std::string(argv[1]));
   parser->setScene();
+  std::chrono::steady_clock::time_point time_end =
+      std::chrono::steady_clock::now();
+  std::cout << "XML Parsing Time = "
+            << std::chrono::duration_cast<std::chrono::microseconds>(time_end -
+                                                                     begin)
+                   .count()
+            << "[ms]" << std::endl;
+
   Scene scene = parser->getScene();
   std::ofstream fout("output.ppm");
   const int image_width = scene.camera.plane.nx;
@@ -90,13 +108,11 @@ int main() {
   const int hw_t = std::thread::hardware_concurrency();
   const int pixel_count = image_height * image_width;
   const int pixel_per_thread = pixel_count / hw_t;
-  const int left_over = pixel_count % hw_t;
 
   std::mutex mutex;
   std::condition_variable cvResults;
   std::vector<std::future<std::vector<color>>> m_futures;
-  fout << "P3\n" << image_width << " " << image_height << "\n255\n";
-
+  begin = std::chrono::steady_clock::now();
   int start = 0;
   int end = pixel_per_thread;
   for (int j = 0; j < hw_t + 1; ++j) {
@@ -121,9 +137,18 @@ int main() {
     cvResults.wait(
         lock, [&m_futures, &hw_t] { return m_futures.size() == hw_t + 1; });
   }
+
+  begin = std::chrono::steady_clock::now();
+  fout << "P3\n" << image_width << " " << image_height << "\n255\n";
   for (std::future<std::vector<color>> &r : m_futures) {
     for (color color : r.get()) {
       color_ouput(fout, color);
     }
   }
+  time_end = std::chrono::steady_clock::now();
+  std::cout << "Rendering Time = "
+            << std::chrono::duration_cast<std::chrono::microseconds>(time_end -
+                                                                     begin)
+                   .count()
+            << "[ms]" << std::endl;
 }
